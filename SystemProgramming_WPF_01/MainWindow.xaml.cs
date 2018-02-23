@@ -5,18 +5,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using SystemProgramming_WPF_01.Model_DataBaseForBrowser;
 using Microsoft.CSharp;
@@ -45,11 +38,18 @@ namespace SystemProgramming_WPF_01
             //processinfo
             //processred
             //processModule
-            ProccessList.ItemsSource = proc;
-            Process.GetProcesses().OrderBy(o => o.ProcessName);
-            timer.Interval = TimeSpan.FromMilliseconds(750);
-            timer.Tick += OnTimerTick;
-            timer.Start();
+            try
+            {
+                DB.Processes.Count();
+                timer.Interval = TimeSpan.FromMilliseconds(1200);
+                timer.Tick += OnTimerTick;
+                timer.Start();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"{e}");
+            }
+        
             //GetProc(true, 500, null);
         }
         private async void GetProc(bool flag, int count, string orderBy)
@@ -120,7 +120,7 @@ namespace SystemProgramming_WPF_01
                                     {
                                         a.Kill();
                                         MessageBox.Show(
-                                            "Внимание! Один из процессов хрома сильно нагружал систему , в целях предотвращения сбоев нам пришлось убить этот процесс!! ");
+                                            "Внимание! Один из процессов хрома  и не только сильно нагружал систему , в целях предотвращения сбоев нам пришлось убить этот процесс!! ");
                                     }
                                 }
                             }
@@ -170,7 +170,13 @@ namespace SystemProgramming_WPF_01
         }
         private void SetData(List<Process> p)
         {
-
+            //var v = p.Select(s => new
+            //{
+            //    WorkingSet64 = s.WorkingSet64 / 1024 / 1024,
+            //    s.Id,
+            //    s.ProcessName,
+            //    counter = new PerformanceCounter("Process", "% Processor Time", s.ProcessName, true).NextValue() / Environment.ProcessorCount
+            //}).ToList();
             ProccessList.ItemsSource = p;
         }
         private async void OnTimerTick(object sender, object e)
@@ -247,7 +253,15 @@ namespace SystemProgramming_WPF_01
         }
         private void GetProcessesByName(object sender, object e)
         {
-            ProccessList.ItemsSource = Process.GetProcesses().Where(w => w.ProcessName == FindProcessTextBox.Text || w.ProcessName.Contains(FindProcessTextBox.Text)).ToList();
+
+            ProccessList.ItemsSource = Process.GetProcesses().Where(w => w.ProcessName == FindProcessTextBox.Text || w.ProcessName.Contains(FindProcessTextBox.Text)).Select(s => new
+            {
+                WorkingSet64 = s.WorkingSet64 / 1024 / 1024,
+                s.Id,
+                s.ProcessName,
+                // counter = new PerformanceCounter("Process", "% Processor Time", s.ProcessName, true).NextValue() / Environment.ProcessorCount
+            }).ToList();
+
         }
         private void OrderByNamesButton_Checked(object sender, RoutedEventArgs e)
         {
@@ -358,7 +372,8 @@ namespace SystemProgramming_WPF_01
             else if (CodeTextBox.ActualHeight < MainWindowForResize.ActualHeight - 230)
             {
                 MainWindowForResize.Height = MainWindowForResize.Height - 30;
-            }else if (e.Key == Key.F5)
+            }
+            else if (e.Key == Key.F5)
             {
                 var csc = new CSharpCodeProvider(new Dictionary<string, string>() { });
                 var parameters = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll" }, "test.exe", true);
@@ -390,13 +405,13 @@ namespace SystemProgramming_WPF_01
             try
             {
 
-               var csc = new CSharpCodeProvider(new Dictionary<string, string>() { });
+                var csc = new CSharpCodeProvider(new Dictionary<string, string>() { });
                 var parameters = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll" }, "test.exe", true);
                 parameters.GenerateExecutable = true;
                 string code = CodeTextBox.Text;
                 CompilerResults results = csc.CompileAssemblyFromSource(parameters, code);
 
-                results.Errors.Cast<CompilerError>().ToList().ForEach(error => Task2ErrorOrSuccessTextBlock.Text+=(error.ErrorText));
+                results.Errors.Cast<CompilerError>().ToList().ForEach(error => Task2ErrorOrSuccessTextBlock.Text += (error.ErrorText));
                 CompilerParameters compilerParams = new CompilerParameters();
                 string outputDirectory = Directory.GetCurrentDirectory();
 
@@ -411,7 +426,7 @@ namespace SystemProgramming_WPF_01
 
                 CSharpCodeProvider provider = new CSharpCodeProvider();
                 CompilerResults compile = provider.CompileAssemblyFromSource(compilerParams, code);
-                Process.Start(outputDirectory+@"\test.exe");
+                Process.Start(outputDirectory + @"\test.exe");
             }
             catch (Exception ex)
             {

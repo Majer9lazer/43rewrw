@@ -44,7 +44,7 @@
                                     <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Path=Id}"></GridViewColumn>
                                     <GridViewColumn Header="ThreadsCount" DisplayMemberBinding="{Binding Path=Threads.Count}"></GridViewColumn>
                                     <GridViewColumn Header="Memory" DisplayMemberBinding="{Binding Path=WorkingSet64}"></GridViewColumn>
-                                    <GridViewColumn Header="Memorybytes" DisplayMemberBinding="{Binding Path=Memorybytes}"></GridViewColumn>
+                                    <GridViewColumn Header="Perfomance counter" DisplayMemberBinding="{Binding Path=counter}"></GridViewColumn>
                                     <GridViewColumn Header="ProcessorAffinity" DisplayMemberBinding="{Binding Path=ProcessorAffinity}"></GridViewColumn>
                                 </GridView.Columns>
                             </GridView>
