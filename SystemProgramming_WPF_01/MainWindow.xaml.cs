@@ -28,6 +28,7 @@ namespace SystemProgramming_WPF_01
         private static ProcessesDb DB = new ProcessesDb();
         CancellationTokenSource cts = new CancellationTokenSource();
         DispatcherTimer timer = new DispatcherTimer();
+        private object locker = new object();
         public MainWindow()
         {
             /*
@@ -49,7 +50,7 @@ namespace SystemProgramming_WPF_01
             {
                 MessageBox.Show($"{e}");
             }
-        
+
             //GetProc(true, 500, null);
         }
         private async void GetProc(bool flag, int count, string orderBy)
@@ -292,6 +293,66 @@ namespace SystemProgramming_WPF_01
         }
 
         private void LearnDataBAse_Click(object sender, RoutedEventArgs e)
+        {          
+            Thread a = new Thread(() => SaveChangesTodb());
+            a.Priority = ThreadPriority.Highest;
+            a.Start();
+            a.Join();
+            #region НЕ совсем рабочий метод
+            //new Thread(delegate ()
+            //{
+            //    lock (locker)
+            //    {
+            //        while (k > 0)
+            //        {
+            //            List<Process> browser = Process.GetProcesses().Where(f => f.ProcessName == "chrome" || f.ProcessName == "browser").ToList();
+            //            if (browser.Count > 0)
+            //            {
+
+            //                var antype = browser.Where(w => w.WorkingSet64 / 1024 / 1024 > 90).OrderBy(o => o.WorkingSet64).Select(s => new
+            //                {
+            //                    s.ProcessName,
+            //                    s.WorkingSet64,
+            //                    s.Id
+            //                });
+            //                List<Model_DataBaseForBrowser.Process> l = new List<Model_DataBaseForBrowser.Process>();
+            //                foreach (var item in antype)
+            //                {
+            //                    l.Add(new Model_DataBaseForBrowser.Process() { ProcessId = item.Id, ProcessName = item.ProcessName, ProcessMemorySize = item.WorkingSet64 / 1024 / 1024 });
+            //                }
+            //                try
+            //                {
+            //                    DB.Processes.AddRange(l);
+            //                    DB.SaveChanges();
+            //                    // MessageBox.Show("Система была обучена!");
+            //                    k--;
+            //                    if (k == 0)
+            //                    {
+            //                        MessageBox.Show("Система была обучена!");
+            //                    }
+            //                }
+
+            //                catch (Exception ex)
+            //                {
+            //                    //errorOrSuccesTex.Text += ex;
+            //                    break;
+            //                }
+            //            }
+            //            else
+            //            {
+            //                ErrorOrSuccesTex.Text = "Ни одного процесса не было найдено)))";
+            //                break;
+            //            }
+
+            //        }
+            //    }
+
+
+            //}).Start();
+            #endregion
+            MessageBox.Show("Система была обучена если в строке exceptiona пусто!)");
+        }
+        private void SaveChangesTodb()
         {
             int k = 10;
             while (k > 0)
@@ -299,7 +360,6 @@ namespace SystemProgramming_WPF_01
                 List<Process> browser = Process.GetProcesses().Where(f => f.ProcessName == "chrome" || f.ProcessName == "browser").ToList();
                 if (browser.Count > 0)
                 {
-                    ErrorOrSuccesTex.Text += "Процессы найдены";
                     var antype = browser.Where(w => w.WorkingSet64 / 1024 / 1024 > 90).OrderBy(o => o.WorkingSet64).Select(s => new
                     {
                         s.ProcessName,
@@ -311,29 +371,33 @@ namespace SystemProgramming_WPF_01
                     {
                         l.Add(new Model_DataBaseForBrowser.Process() { ProcessId = item.Id, ProcessName = item.ProcessName, ProcessMemorySize = item.WorkingSet64 / 1024 / 1024 });
                     }
-                    try
+                    if (l.Count > 0)
                     {
-                        DB.Processes.AddRange(l);
-                        DB.SaveChanges();
-                        ErrorOrSuccesTex.Text += ("Система была обучена!");
-                        ErrorOrSuccesTex.Text = null;
-                        k--;
+                        try
+                        {
+                            DB.Processes.AddRange(l);
+                            DB.SaveChanges();
+                            // ErrorOrSuccesTex.Text += ("Система была обучена");
+                            // MessageBox.Show("Система была обучена!");
+                            k--;
+                            if (k == 0)
+                            {
+                                MessageBox.Show("Система была обучена!");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            //errorOrSuccesTex.Text += ex;
+                            break;
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        ErrorOrSuccesTex.Text += ex;
-                        break;
-                    }
-
-
                 }
                 else
                 {
-                    ErrorOrSuccesTex.Text = "Ни одного процесса не было найдено)))";
+                    MessageBox.Show("Ни одного процесса не было найдено)))");
                     break;
                 }
             }
-            MessageBox.Show("Система была обучена если в строке exceptiona пусто!)");
         }
 
         private void OpenFileDialogButton_OnClick(object sender, RoutedEventArgs e)

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SystemProgramming_WPF_01"
         mc:Ignorable="d"
-        Title="MainWindow" Height="585" Width="783.5" x:Name="MainWindowForResize">
+        Title="MainWindow" Height="634.233" Width="840.938" x:Name="MainWindowForResize">
     <Grid>
         <TabControl>
             <TabItem Header="Отслеживание процессов">
@@ -17,23 +17,25 @@
                         <RowDefinition Height="310"></RowDefinition>
                         <RowDefinition Height="110"></RowDefinition>
                         <RowDefinition Height="40"></RowDefinition>
+            
                     </Grid.RowDefinitions>
                     <Label Grid.Row="1" Background="AntiqueWhite" Content="Чтобы удалить процесс нужен двойной щелчок мыши"></Label>
 
                     <StackPanel  Grid.Row="2" Orientation="Horizontal">
                         <Label VerticalContentAlignment="Center" VerticalAlignment="Center"  Content="Insert process name to find" Margin="3"></Label>
                         <TextBox x:Name="FindProcessTextBox" Width="150" Height="20"></TextBox>
+                     
                         <Button x:Name="FindProcessButton" Content="Find Process" Margin="3" VerticalAlignment="Center" Background="#29D50A" Foreground="Black" Click="FindProcessButton_Click"></Button>
                     </StackPanel>
 
                     <TextBlock x:Name="ErrorOrSuccesTex" TextWrapping="Wrap" Grid.Row="5" Background="AliceBlue" Margin="3"></TextBlock>
+
                     <StackPanel  Grid.Row="0" Orientation="Horizontal">
                         <RadioButton Background="White" VerticalAlignment="Center"  Margin="3" Content="Order By Names" x:Name="OrderByNamesButton" Checked="OrderByNamesButton_Checked"></RadioButton>
                         <RadioButton Background="White" VerticalAlignment="Center" Margin="3" Content="Order By Memory" x:Name="OrderByMemoryButton" Checked="OrderByMemoryButton_Checked"></RadioButton>
                         <RadioButton Background="White" VerticalAlignment="Center" Margin="3" Content="Order By ThredsCount" x:Name="OrderByThreadsCount" Checked="OrderByThreadsCount_Checked"></RadioButton>
                         <Button Background="White"  Margin="3" Content="CheckForBrowser" x:Name="CheckForavaliable" Click="CheckForavaliable_OnClick"></Button>
                         <Button Background="White"  Margin="3" Content="Обучить базу данных 10 раз за один клик" x:Name="LearnDataBAse" Click="LearnDataBAse_Click"></Button>
-
                     </StackPanel>
 
                     <ListView Grid.Row="3" x:Name="ProccessList"  SelectionChanged="ProccessList_SelectionChanged" MouseDoubleClick="ProccessList_OnMouseDoubleClick" >
